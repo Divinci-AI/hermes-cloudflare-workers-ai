@@ -1,0 +1,5 @@
+name: cloudflare-workers-ai-provider
+kind: model-provider
+version: 0.1.0
+description: Cloudflare Workers AI (OpenAI-compatible chat completions on Cloudflare's edge)
+author: Divinci AI

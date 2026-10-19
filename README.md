@@ -40,6 +40,10 @@ Install by placing this directory at `$HERMES_HOME/plugins/model-providers/cloud
   `127.0.0.1` or `::1`) and carry no credentials, query string or fragment. The same checks apply to a
   base URL handed in by Hermes (`model.base_url`, a stored credential). A rejected URL sends nothing
   and the error never repeats it.
+- **Capacity errors don't burn your credential pool.** Workers AI answers `429` / code `3040`
+  ("Capacity temporarily exceeded") when the whole *account* is under contention. The plugin classifies
+  it as `overloaded` (back off and retry) instead of Hermes's default `rate_limit`, which would rotate to
+  the next pooled key even though every key shares the same limit. Other 429s keep Hermes's default.
 - **Account id changes apply without a restart.**
 - **Missing or malformed `CLOUDFLARE_ACCOUNT_ID`** fails with a clear error in the conversation and sends
   nothing over the network.

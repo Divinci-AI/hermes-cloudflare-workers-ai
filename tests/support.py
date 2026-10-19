@@ -34,7 +34,7 @@ if not (HERMES_SRC / "providers" / "__init__.py").exists():
 sys.path.insert(0, str(HERMES_SRC))
 
 PROVIDER = "cloudflare-workers-ai"
-PLUGIN_FILES = ("__init__.py", "plugin.yaml", "endpoint.py", "catalog.py", "client.py")
+PLUGIN_FILES = ("__init__.py", "plugin.yaml", "endpoint.py", "catalog.py", "client.py", "classify.py")
 
 # Fake, obviously non-secret values, assembled at runtime.
 ACCOUNT_A = "a" * 32

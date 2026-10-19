@@ -98,7 +98,9 @@ def test_a_runaway_catalog_is_bounded():
         return {"result": [row(f"@cf/a/m{len(calls)}")]}
 
     models = catalog.fetch_chat_models(endless, ACCOUNT_A)
-    assert len(calls) == catalog.MAX_PAGES and len(models) == catalog.MAX_PAGES
+    # A literal, not catalog.MAX_PAGES: comparing the constant to itself passes for any value, including
+    # one large enough to hang the model picker on a catalog that never reports an end.
+    assert len(calls) == 20 and len(models) == 20
 
 
 def test_a_failed_first_page_is_none_but_a_later_failure_keeps_what_we_have():
@@ -168,6 +170,8 @@ def test_fetch_models_queries_the_bound_accounts_search_endpoint(make_home, netw
     assert models == ["@cf/a/one"]
     assert seen[0].full_url.startswith(f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_A}/ai/models/search")
     assert seen[0].get_header("Authorization") == f"Bearer {TOKEN_A}"
+    assert seen[0].get_header("Accept") == "application/json"
+    assert seen[0].get_header("User-agent")  # urllib capitalises header names oddly; it must be set
 
 
 def test_fetch_models_prefers_a_proxy_catalog_when_one_is_configured(make_home, network):

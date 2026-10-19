@@ -14,6 +14,7 @@ from providers import register_provider
 from providers.base import ProviderProfile, _profile_user_agent
 
 from .catalog import fetch_chat_models
+from .classify import classify_api_error
 from .client import build_client
 from .endpoint import PLACEHOLDER_BASE_URL, WorkersAIConfigError, bound_account_id, explicit_base_url
 
@@ -72,6 +73,7 @@ register_provider(
         # the PROCESS env, which is how one profile's proxy would catch another profile's token.
         env_vars=("CLOUDFLARE_API_TOKEN", "CLOUDFLARE_API_KEY"),
         base_url=PLACEHOLDER_BASE_URL,
+        classify_api_error=classify_api_error,  # account-level capacity 429s must not rotate credentials
         supports_health_check=False,  # core would probe the placeholder URL; see README
         # One id known to work on a live account; the full list is verified against the live catalog
         # before release (plan M3) rather than copied from elsewhere.

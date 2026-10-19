@@ -4,7 +4,7 @@ A standalone model-provider plugin that adds [Cloudflare Workers AI](https://dev
 (OpenAI-compatible chat completions, `@cf/...` models) to [Hermes](https://github.com/NousResearch/hermes-agent).
 
 > **Status: v0.1, unreleased, tested only against a throwaway Hermes home.** Not endorsed by Nous Research
-> or Cloudflare. Licence not yet chosen. Pinned/tested against hermes-agent `fdec926ef5`.
+> or Cloudflare. Licensed MIT (see LICENSE), matching hermes-agent. Pinned/tested against hermes-agent `fdec926ef5`.
 
 ## Why a plugin
 

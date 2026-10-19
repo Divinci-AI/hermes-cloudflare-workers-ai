@@ -22,6 +22,9 @@ CLOUDFLARE_ACCOUNT_ID=...     # Cloudflare dashboard -> Workers AI
 # optional: CLOUDFLARE_BASE_URL=https://your-gateway.example/ai/v1   (proxy / AI Gateway)
 ```
 
+Use a token scoped to **Workers AI only**. The token is sent as a bearer credential to whatever URL the
+profile resolves to, so do not reuse a broad deploy/ops token here.
+
 Install by placing this directory at `$HERMES_HOME/plugins/model-providers/cloudflare-workers-ai/`
 (or `hermes plugins install <repo-url>`), then select the provider `cloudflare-workers-ai`
 (alias `cf-workers-ai`).
@@ -31,6 +34,12 @@ Install by placing this directory at `$HERMES_HOME/plugins/model-providers/cloud
 - **Per-profile.** Each Hermes profile uses its own account, token and proxy, even when one process serves
   several profiles. A fixed account-free URL is registered with Hermes; the real one is applied when the
   client is built.
+- **`CLOUDFLARE_BASE_URL` is read from the profile's `.env` only**, never from the shell or process
+  environment: a variable exported in a shell (or inherited from a parent process) would otherwise
+  redirect the token of every profile. The URL must be `https://` (plain `http://` only for `localhost`,
+  `127.0.0.1` or `::1`) and carry no credentials, query string or fragment. The same checks apply to a
+  base URL handed in by Hermes (`model.base_url`, a stored credential). A rejected URL sends nothing
+  and the error never repeats it.
 - **Account id changes apply without a restart.**
 - **Missing or malformed `CLOUDFLARE_ACCOUNT_ID`** fails with a clear error in the conversation and sends
   nothing over the network.

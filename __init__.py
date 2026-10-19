@@ -29,7 +29,10 @@ class CloudflareWorkersAIProfile(ProviderProfile):
     def fetch_models(
         self, *, api_key: str | None = None, base_url: str | None = None, timeout: float = 8.0
     ) -> list[str] | None:
-        override = explicit_base_url(base_url or "")
+        try:
+            override = explicit_base_url(base_url or "")
+        except WorkersAIConfigError:
+            return None  # never send the key to a URL that failed validation
         if override:
             # A proxy is selected: its own /models is the catalog (base-class contract).
             return super().fetch_models(api_key=api_key, base_url=override, timeout=timeout)

@@ -58,11 +58,26 @@ Install by placing this directory at `$HERMES_HOME/plugins/model-providers/cloud
 ## Tests
 
 ```
-HERMES_AGENT_DIR=~/.hermes/hermes-agent PYTHONPATH=.testdeps \
-  ~/.hermes/hermes-agent/venv/bin/python -m pytest -c tests/pytest.ini tests
+python -m pip install -r requirements-test.txt
+HERMES_AGENT_DIR=/path/to/hermes-agent python -m pytest tests -q
 ```
 
-The suite runs inside throwaway Hermes homes and **blocks** `hermes_bootstrap`: importing it (directly or via
-`agent.process_bootstrap`) outside the Hermes launcher runs Hermes's launch preparation, which rebuilds the
-checkout's UI/desktop assets and syncs dependencies over the network. The plugin itself only uses Hermes's
-client helpers when `hermes_bootstrap` is already loaded.
+`HERMES_AGENT_DIR` is a checkout of [hermes-agent](https://github.com/NousResearch/hermes-agent) (Hermes
+itself is not pip-installed). Three layers, all run by the one command:
+
+- **Unit / contract tests** load the plugin through Hermes's real discovery inside throwaway Hermes homes
+  and assert the HTTP boundary (which host, which path, which `Authorization`) across several profiles in
+  one process, plus the URL-safety rules and the capacity-429 classifier.
+- **End-to-end tests** (`tests/test_e2e_fake_cloudflare.py`) run the real OpenAI SDK over a real socket to
+  a fake Cloudflare on `127.0.0.1` (`tests/fakecf.py`): streaming, `401`/`403`/`429`/`500`, `Retry-After`,
+  and the verdict Hermes's own classifier reaches for each. No credentials, no network. They reach the
+  *override* path only; the real `api.cloudflare.com` URL is deliberately not overridable, because a knob
+  that redirected it would be a way to redirect the token. That one hop is covered by the unit tests.
+- **CI** (`.github/workflows/test.yml`) runs the suite on every push and PR, and weekly, against two Hermes
+  revisions: the **pin** (`fdec926ef5`, gating) and **main** (non-blocking early warning that Hermes
+  changed something the plugin relies on - the tests use a few Hermes private APIs).
+
+The suite **blocks** `hermes_bootstrap`: importing it (directly or via `agent.process_bootstrap`) outside
+the Hermes launcher runs Hermes's launch preparation, which rebuilds the checkout's UI/desktop assets and
+syncs dependencies over the network. The plugin itself only uses Hermes's client helpers when
+`hermes_bootstrap` is already loaded.

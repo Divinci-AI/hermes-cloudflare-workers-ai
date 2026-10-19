@@ -1,0 +1,9 @@
+# Test-only dependencies. Hermes itself is NOT installed: the suite imports it from a checkout
+# (HERMES_AGENT_DIR), which is exactly what lets CI run it against a pinned commit and against main.
+pytest
+openai
+httpx
+pydantic
+pyyaml
+ruamel.yaml
+python-dotenv
